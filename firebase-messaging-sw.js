@@ -1,1 +1,33 @@
-importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js");importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js");firebase.initializeApp({apiKey:"AIzaSyCAwYbe9Co9y1g_3oG3bcjHX5VSaN44B8U",projectId:"image-api-f55eb",messagingSenderId:"981505208035",appId:"1:981505208035:web:e5b695b767a2d6d8529fd6"});const o=firebase.messaging();o.onBackgroundMessage(i=>{console.log("Background message received:",i);const t={body:i.notification.body,icon:"/your-logo.png",data:{click_action:i.fcmOptions.link}};return self.registration.showNotification(i.notification.title,t)});self.addEventListener("notificationclick",i=>{i.notification.close(),i.waitUntil(clients.openWindow(i.notification.data.click_action||"/"))});
+// firebase-messaging-sw.js
+importScripts('https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/9.x.x/firebase-messaging.js');
+
+// Initialize Firebase
+firebase.initializeApp({
+  // Your Firebase config
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log('Background Message Payload:', payload); // Log the payload
+
+  // Safely access properties with defaults
+  const notification = payload.notification || {};
+  const title = notification.title || 'Default Title';
+  const options = {
+    body: notification.body || 'Default Body',
+    icon: '/icon.png',
+    data: {
+      link: notification.link || '/' // Fallback to root if link is missing
+    }
+  };
+
+  return self.registration.showNotification(title, options);
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const link = event.notification.data.link || '/';
+  event.waitUntil(clients.openWindow(link));
+});
