@@ -21,9 +21,18 @@ messaging.onBackgroundMessage((payload) => {
     const options = {
       body: notification.body || 'Default Body',
       icon: '/dial/your-logo.jpg',
+      badge: '/dial/your-logo.jpg',
+      vibrate: [200, 100, 200, 100, 200],
+      renotify: true,
+      tag: 'device-manager-notification',
+      requireInteraction: true,
+      silent: false, // Ensure sound is not muted
+      timestamp: Date.now(),
       data: { link: notification.link || '/' }
     };
-    return self.registration.showNotification(title, options);
+    return self.registration.showNotification(title, options).then(() => {
+      console.log('Background notification displayed');
+    });
   } catch (error) {
     console.error('Error handling background message:', error);
   }
