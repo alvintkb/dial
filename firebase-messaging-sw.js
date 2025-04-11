@@ -1,6 +1,6 @@
-// firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging-compat.js');
+// public/dial/firebase-messaging-sw.js
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 
 firebase.initializeApp({
   apiKey: "AIzaSyCAwYbe9Co9y1g_3oG3bcjHX5VSaN44B8U",
@@ -15,15 +15,19 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log('Background Message Payload:', payload);
-  const notification = payload.notification || {};
-  const title = notification.title || 'Default Title';
-  const options = {
-    body: notification.body || 'Default Body',
-    icon: '/dial/your-logo.jpg',
-    data: { link: notification.link || '/' }
-  };
-  return self.registration.showNotification(title, options);
+  try {
+    console.log('Background Message:', JSON.stringify(payload));
+    const notification = payload.notification || {};
+    const title = notification.title || 'Default Title';
+    const options = {
+      body: notification.body || 'Default Body',
+      icon: '/dial/your-logo.jpg',
+      data: { link: notification.link || '/' }
+    };
+    return self.registration.showNotification(title, options);
+  } catch (error) {
+    console.error('Error handling background message:', error);
+  }
 });
 
 self.addEventListener('notificationclick', (event) => {
