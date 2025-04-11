@@ -1,40 +1,33 @@
-// E:/vue/dialFunnel2/public/firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js');
+// firebase-messaging-sw.js
+importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging-compat.js');
 
-const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-auth-domain",
-  projectId: "your-project-id",
-  storageBucket: "your-storage-bucket",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id",
-};
+firebase.initializeApp({
+  apiKey: "AIzaSyCAwYbe9Co9y1g_3oG3bcjHX5VSaN44B8U",
+  authDomain: "image-api-f55eb.firebaseapp.com",
+  projectId: "image-api-f55eb",
+  storageBucket: "image-api-f55eb.firebasestorage.app",
+  messagingSenderId: "981505208035",
+  appId: "1:981505208035:web:e5b695b767a2d6d8529fd6",
+  measurementId: "G-KKVCQV1YX0"
+});
 
-firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log('Background message received:', payload);
-
-  // Safely extract notification data with fallbacks
+  console.log('Background Message Payload:', payload);
   const notification = payload.notification || {};
-  const title = notification.title || 'Notification';
+  const title = notification.title || 'Default Title';
   const options = {
-    body: notification.body || 'You have a new message',
-    icon: '/dial/favicon.ico', // Adjust based on your base path
-    // Only include link if it exists (example; adjust as needed)
-    ...(notification.link && { data: { url: notification.link } })
+    body: notification.body || 'Default Body',
+    icon: '/dial/your-logo.jpg',
+    data: { link: notification.link || '/' }
   };
+  return self.registration.showNotification(title, options);
+});
 
-  // Show the notification
-  self.registration.showNotification(title, options);
-
-  // Optional: Handle click to open a URL (if link exists)
-  self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    if (options.data?.url) {
-      event.waitUntil(clients.openWindow(options.data.url));
-    }
-  });
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const link = event.notification.data.link || '/';
+  event.waitUntil(clients.openWindow(link));
 });
